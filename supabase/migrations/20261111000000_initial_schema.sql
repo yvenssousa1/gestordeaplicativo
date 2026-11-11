@@ -75,14 +75,15 @@ create table if not exists public.campaigns (
   metadata jsonb not null default '{}'::jsonb,
   created_by uuid references auth.users(id) on delete set null,
   created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
+  updated_at timestamptz not null default now(),
+  unique (id, business_id)
 );
 
 create table if not exists public.opportunities (
   id uuid primary key default gen_random_uuid(),
   business_id uuid not null references public.business_units(id) on delete restrict,
   contact_id uuid not null references public.contacts(id) on delete cascade,
-  campaign_id uuid references public.campaigns(id) on delete set null,
+  campaign_id uuid references public.campaigns(id) on delete restrict,
   title text not null,
   stage text not null default 'new' check (stage in ('new','contacted','qualified','proposal','won','lost')),
   amount numeric(14,2),
@@ -93,7 +94,7 @@ create table if not exists public.opportunities (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   foreign key (contact_id, business_id) references public.contacts(id, business_id) on delete cascade,
-  foreign key (campaign_id, business_id) references public.campaigns(id, business_id) on delete set null
+  foreign key (campaign_id, business_id) references public.campaigns(id, business_id) on delete restrict
 );
 create index if not exists opportunities_business_stage_idx on public.opportunities (business_id, stage, created_at desc);
 
