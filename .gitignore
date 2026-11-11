@@ -1,0 +1,12 @@
+node_modules
+.output
+dist
+.env
+.env.*
+!.env.example
+!.env.test.example
+.supabase
+.DS_Store
+*.log
+coverage
+src/routeTree.gen.ts
