@@ -55,7 +55,8 @@ create table if not exists public.contacts (
   created_by uuid references auth.users(id) on delete set null,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
-  check (email is not null or phone_e164 is not null)
+  check (email is not null or phone_e164 is not null),
+  unique (id, business_id)
 );
 create index if not exists contacts_business_created_idx on public.contacts (business_id, created_at desc);
 create index if not exists contacts_business_phone_idx on public.contacts (business_id, phone_e164);
@@ -90,7 +91,9 @@ create table if not exists public.opportunities (
   lost_reason text,
   owner_user_id uuid references auth.users(id) on delete set null,
   created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
+  updated_at timestamptz not null default now(),
+  foreign key (contact_id, business_id) references public.contacts(id, business_id) on delete cascade,
+  foreign key (campaign_id, business_id) references public.campaigns(id, business_id) on delete set null
 );
 create index if not exists opportunities_business_stage_idx on public.opportunities (business_id, stage, created_at desc);
 
@@ -104,7 +107,9 @@ create table if not exists public.conversations (
   assigned_to uuid references auth.users(id) on delete set null,
   last_message_at timestamptz,
   created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
+  updated_at timestamptz not null default now(),
+  unique (id, business_id),
+  foreign key (contact_id, business_id) references public.contacts(id, business_id) on delete cascade
 );
 
 create table if not exists public.messages (
@@ -118,7 +123,8 @@ create table if not exists public.messages (
   delivery_status text not null default 'received' check (delivery_status in ('received','queued','sent','delivered','read','failed')),
   provider_payload jsonb not null default '{}'::jsonb,
   created_at timestamptz not null default now(),
-  unique (business_id, external_message_id)
+  unique (business_id, external_message_id),
+  foreign key (conversation_id, business_id) references public.conversations(id, business_id) on delete cascade
 );
 create index if not exists messages_conversation_created_idx on public.messages (conversation_id, created_at);
 
@@ -131,7 +137,8 @@ create table if not exists public.consents (
   status text not null check (status in ('granted','withdrawn','denied')),
   captured_at timestamptz not null default now(),
   source text,
-  evidence jsonb not null default '{}'::jsonb
+  evidence jsonb not null default '{}'::jsonb,
+  foreign key (contact_id, business_id) references public.contacts(id, business_id) on delete cascade
 );
 
 create table if not exists public.appointments (
@@ -148,7 +155,8 @@ create table if not exists public.appointments (
   metadata jsonb not null default '{}'::jsonb,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
-  check (ends_at > starts_at)
+  check (ends_at > starts_at),
+  foreign key (contact_id, business_id) references public.contacts(id, business_id) on delete cascade
 );
 
 create table if not exists public.integration_connections (
@@ -236,37 +244,27 @@ using (public.has_business_access(business_id)) with check (public.has_business_
 drop policy if exists opportunities_member_all on public.opportunities;
 create policy opportunities_member_all on public.opportunities for all to authenticated
 using (public.has_business_access(business_id)) with check (
-  public.has_business_access(business_id) and exists (
-    select 1 from public.contacts c where c.id = contact_id and c.business_id = business_id
-  )
+  public.has_business_access(opportunities.business_id)
 );
 drop policy if exists conversations_member_all on public.conversations;
 create policy conversations_member_all on public.conversations for all to authenticated
 using (public.has_business_access(business_id)) with check (
-  public.has_business_access(business_id) and exists (
-    select 1 from public.contacts c where c.id = contact_id and c.business_id = business_id
-  )
+  public.has_business_access(conversations.business_id)
 );
 drop policy if exists messages_member_all on public.messages;
 create policy messages_member_all on public.messages for all to authenticated
 using (public.has_business_access(business_id)) with check (
-  public.has_business_access(business_id) and exists (
-    select 1 from public.conversations c where c.id = conversation_id and c.business_id = business_id
-  )
+  public.has_business_access(messages.business_id)
 );
 drop policy if exists consents_member_all on public.consents;
 create policy consents_member_all on public.consents for all to authenticated
 using (public.has_business_access(business_id)) with check (
-  public.has_business_access(business_id) and exists (
-    select 1 from public.contacts c where c.id = contact_id and c.business_id = business_id
-  )
+  public.has_business_access(consents.business_id)
 );
 drop policy if exists appointments_member_all on public.appointments;
 create policy appointments_member_all on public.appointments for all to authenticated
 using (public.has_business_access(business_id)) with check (
-  public.has_business_access(business_id) and exists (
-    select 1 from public.contacts c where c.id = contact_id and c.business_id = business_id
-  )
+  public.has_business_access(appointments.business_id)
 );
 drop policy if exists integrations_member_all on public.integration_connections;
 create policy integrations_member_all on public.integration_connections for all to authenticated
