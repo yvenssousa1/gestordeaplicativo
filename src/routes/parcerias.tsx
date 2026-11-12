@@ -62,7 +62,7 @@ function PartnershipsPage() {
 
           <div className="notice">
             <span className="notice-icon"><Handshake size={18} /></span>
-            <div><strong>Diretório importado — ainda sem contactos realizados</strong><p>Os 35 registos abaixo foram transcritos do documento fornecido. Não representam parcerias confirmadas. Valide os dados e a adequação antes de contactar cada entidade.</p></div>
+            <div><strong>Diretório importado — ainda sem contactos realizados</strong><p>Os 36 registos abaixo foram transcritos do documento fornecido. Não representam parcerias confirmadas. Valide os dados e a adequação antes de contactar cada entidade.</p></div>
           </div>
 
           <div className="partnership-stats">
