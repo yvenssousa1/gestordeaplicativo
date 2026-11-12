@@ -39,7 +39,7 @@ create index service_prices_service_active_idx on public.service_prices (busines
 alter table public.appointments add column service_id uuid;
 alter table public.appointments
   add constraint appointments_service_business_fk
-  foreign key (service_id, business_id) references public.services(id, business_id) on delete set null;
+  foreign key (service_id, business_id) references public.services(id, business_id) on delete set null (service_id);
 
 create table public.ad_accounts (
   id uuid primary key default gen_random_uuid(),
@@ -65,7 +65,7 @@ alter table public.campaigns
   add column ad_account_id uuid,
   add column attribution_window text not null default '7d_click_1d_view',
   add constraint campaigns_ad_account_business_fk
-    foreign key (ad_account_id, business_id) references public.ad_accounts(id, business_id) on delete set null;
+    foreign key (ad_account_id, business_id) references public.ad_accounts(id, business_id) on delete set null (ad_account_id);
 
 create table public.ad_creatives (
   id uuid primary key default gen_random_uuid(),
