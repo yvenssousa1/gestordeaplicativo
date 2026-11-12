@@ -8,8 +8,9 @@ Depois de rever e aprovar as alterações, aplicar no SQL Editor do projecto Sup
 
 1. `supabase/migrations/20261111000000_initial_schema.sql`
 2. `supabase/migrations/20261112000000_partnerships.sql`
+3. `supabase/migrations/20261112130000_marketing_intelligence.sql`
 
-A primeira migração cria as unidades de negócio, memberships e a função de autorização `has_business_access`. A segunda cria `partners` e `partnership_activities`, respectivas políticas RLS e importa os 36 potenciais parceiros do catálogo de Oeiras e Cascais.
+A primeira migração cria as unidades de negócio, memberships e a função de autorização `has_business_access`. A segunda cria `partners` e `partnership_activities`, respectivas políticas RLS e importa os 36 potenciais parceiros do catálogo de Oeiras e Cascais. A terceira acrescenta serviços e preços, contas de anúncios, criativos, métricas diárias, pontos de contacto, conversões, experiências e recomendações.
 
 Não executar a segunda migração antes da primeira. Fazer backup e confirmar que o projecto Supabase é o projecto destinado à aplicação.
 
@@ -18,11 +19,11 @@ Não executar a segunda migração antes da primeira. Fazer backup e confirmar q
 No ambiente de desenvolvimento e no alojamento da aplicação, definir:
 
 ```env
-VITE_SUPABASE_URL=https://vtukmuibskzpyzprvfnu.supabase.co
-VITE_SUPABASE_ANON_KEY=CHAVE_PUBLICA_ANON_OU_PUBLISHABLE
+VITE_SUPABASE_URL=https://ichcexfuqcmcosxunnth.supabase.co
+VITE_SUPABASE_PUBLISHABLE_KEY=sb_publishable_... (ou VITE_SUPABASE_ANON_KEY para compatibilidade)
 ```
 
-A chave pública pode estar no browser porque o acesso às tabelas é controlado por autenticação e RLS. **Nunca** colocar `service_role`, passwords ou secrets em variáveis com prefixo `VITE_` nem no repositório.
+Usa a chave publicável (`sb_publishable_...`) no browser; a chave pública pode estar no cliente porque o acesso às tabelas é controlado por autenticação, GRANTs mínimos e RLS. **Nunca** colocar `service_role`, passwords ou secrets em variáveis com prefixo `VITE_` nem no repositório.
 
 ## 3. Criar/confirmar o utilizador
 
