@@ -304,6 +304,7 @@ revoke update, delete on public.approvals from anon, authenticated;
 
 
 -- Explicit Data API privileges. RLS policies above remain the row-level boundary.
+grant usage on schema public to authenticated;
 revoke all on public.business_units, public.business_memberships,
   public.contacts, public.campaigns, public.opportunities, public.conversations,
   public.messages, public.consents, public.appointments, public.integration_connections,
