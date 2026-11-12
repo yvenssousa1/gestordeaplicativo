@@ -41,14 +41,14 @@ language sql
 stable
 security invoker
 set search_path = ''
-as $
+as $function$
   select exists (
     select 1
     from public.business_memberships as m
     where m.business_id = target_business_id
       and m.user_id = (select auth.uid())
   );
-$;
+$function$;
 revoke all on function private.has_business_access(uuid) from public, anon;
 grant execute on function private.has_business_access(uuid) to authenticated;
 
