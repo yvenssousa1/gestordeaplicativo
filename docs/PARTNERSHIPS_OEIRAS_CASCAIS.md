@@ -22,4 +22,4 @@ Total: 36 entidades nomeadas + 2 segmentos de prospeção não individualizados.
 ## Próxima fase de produto
 A tabela `partners` guarda classificação, modelo de colaboração, frequência, previsão de sessões/receita/custos, origem e estado comercial. `partnership_activities` guarda chamadas, e-mails, WhatsApp, reuniões, sessões, palestras, propostas e próximos passos. Ambas as tabelas têm RLS baseada na associação à unidade de negócio.
 
-A interface inicial apresenta o catálogo de origem. A persistência e edição através do Supabase, assim como a importação dos 35 registos para a tabela, ficam para uma fase posterior com autenticação e permissões operacionais confirmadas. A migração foi criada, mas não foi aplicada.
+A interface inicial apresenta o catálogo de origem a partir do módulo TypeScript. A migração inclui o esquema e o seed idempotente das 36 entidades nomeadas para a unidade de negócio 001. A migração foi criada, mas não foi aplicada. A leitura/edição pela interface através do Supabase continua por ligar e depende da autenticação e das permissões operacionais.
