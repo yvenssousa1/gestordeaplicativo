@@ -9,8 +9,9 @@ Depois de rever e aprovar as alterações, aplicar no SQL Editor do projecto Sup
 1. `supabase/migrations/20261111000000_initial_schema.sql`
 2. `supabase/migrations/20261112000000_partnerships.sql`
 3. `supabase/migrations/20261112130000_marketing_intelligence.sql`
+4. `supabase/migrations/20261112140000_performance_tuning.sql`
 
-A primeira migração cria as unidades de negócio, memberships, o helper privado `private.has_business_access` e o CRM operacional base. O helper usa privilégios do utilizador e não é exposto no schema da API. A segunda cria `partners` e `partnership_activities`, respectivas políticas RLS e importa os 36 potenciais parceiros do catálogo de Oeiras e Cascais. A terceira acrescenta serviços e preços, contas de anúncios, criativos, métricas diárias, pontos de contacto, conversões, experiências e recomendações.
+A primeira migração cria as unidades de negócio, memberships, o helper privado `private.has_business_access` e o CRM operacional base. O helper usa privilégios do utilizador e não é exposto no schema da API. A segunda cria `partners` e `partnership_activities`, respectivas políticas RLS e importa os 36 potenciais parceiros do catálogo de Oeiras e Cascais. A terceira acrescenta serviços e preços, contas de anúncios, criativos, métricas diárias, pontos de contacto, conversões, experiências e recomendações. A quarta optimiza índices de chaves estrangeiras e políticas RLS.
 
 Executar as migrações pela ordem indicada. O projecto remoto foi confirmado como vazio antes desta preparação. As migrações incluem RLS e GRANTs explícitos para a API; as novas tabelas não ficam acessíveis apenas por existirem. Nunca aplicar migrações de outra branch sem comparar os ficheiros.
 
