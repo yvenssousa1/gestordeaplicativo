@@ -213,6 +213,9 @@ function PartnershipsPage() {
       status: 'Por contactar', frequency: 'Por definir', db: null,
     }))
 
+  if (!authReady) return <main className="auth-loading">A validar a sua sessão…</main>
+  if (isSupabaseConfigured() && !session) return <main className="auth-loading"><div><strong>Área reservada</strong><p>Entre para consultar o diretório e gerir parcerias.</p><a className="primary-button" href="/login">Ir para o acesso seguro</a></div></main>
+
   return (
     <main className="app-shell">
       <aside className="sidebar">
