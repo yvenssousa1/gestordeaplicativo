@@ -138,8 +138,8 @@ create table public.lead_touchpoints (
   metadata jsonb not null default '{}'::jsonb,
   created_at timestamptz not null default now(),
   foreign key (contact_id, business_id) references public.contacts(id, business_id) on delete cascade,
-  foreign key (campaign_id, business_id) references public.campaigns(id, business_id) on delete set null,
-  foreign key (creative_id, business_id, campaign_id) references public.ad_creatives(id, business_id, campaign_id) on delete set null,
+  foreign key (campaign_id, business_id) references public.campaigns(id, business_id) on delete set null (campaign_id),
+  foreign key (creative_id, business_id, campaign_id) references public.ad_creatives(id, business_id, campaign_id) on delete set null (creative_id),
   check (creative_id is null or campaign_id is not null)
 );
 create index lead_touchpoints_contact_time_idx on public.lead_touchpoints (business_id, contact_id, occurred_at);
@@ -162,10 +162,10 @@ create table public.conversion_events (
   metadata jsonb not null default '{}'::jsonb,
   created_at timestamptz not null default now(),
   foreign key (contact_id, business_id) references public.contacts(id, business_id) on delete cascade,
-  foreign key (opportunity_id, business_id) references public.opportunities(id, business_id) on delete set null,
-  foreign key (service_id, business_id) references public.services(id, business_id) on delete set null,
-  foreign key (campaign_id, business_id) references public.campaigns(id, business_id) on delete set null,
-  foreign key (creative_id, business_id, campaign_id) references public.ad_creatives(id, business_id, campaign_id) on delete set null,
+  foreign key (opportunity_id, business_id) references public.opportunities(id, business_id) on delete set null (opportunity_id),
+  foreign key (service_id, business_id) references public.services(id, business_id) on delete set null (service_id),
+  foreign key (campaign_id, business_id) references public.campaigns(id, business_id) on delete set null (campaign_id),
+  foreign key (creative_id, business_id, campaign_id) references public.ad_creatives(id, business_id, campaign_id) on delete set null (creative_id),
   check (creative_id is null or campaign_id is not null)
 );
 create index conversion_events_contact_time_idx on public.conversion_events (business_id, contact_id, occurred_at desc);
