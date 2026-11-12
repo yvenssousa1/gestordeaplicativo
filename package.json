@@ -2,14 +2,17 @@
   "name": "client-cue-creative",
   "private": true,
   "type": "module",
-  "engines": { "node": ">=22.0.0", "npm": ">=10.0.0" },
+  "engines": {
+    "node": ">=22.0.0",
+    "npm": ">=10.0.0"
+  },
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "vite build && tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "check": "npm run typecheck && npm run test && npm run build"
+    "check": "npm run typecheck && npm run test"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.57.4",
@@ -28,7 +31,7 @@
     "@vitejs/plugin-react": "^5.0.4",
     "tailwindcss": "^4.1.17",
     "typescript": "^5.9.3",
-    "vite": "^7.1.12",
-    "vitest": "^3.2.4"
+    "vite": "^8.0.0",
+    "vitest": "^5.0.5"
   }
 }
