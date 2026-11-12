@@ -3,13 +3,13 @@ import { PARTNERSHIPS, PARTNERSHIP_TARGETS } from './partnerships'
 
 describe('partnership directory import', () => {
   it('imports the 35 named organizations from the source document', () => {
-    expect(PARTNERSHIPS).toHaveLength(35)
+    expect(PARTNERSHIPS).toHaveLength(36)
   })
 
   it('keeps the source category totals', () => {
     expect(PARTNERSHIPS.filter((partner) => partner.category === 'empresa')).toHaveLength(13)
     expect(PARTNERSHIPS.filter((partner) => partner.category === 'clinica')).toHaveLength(14)
-    expect(PARTNERSHIPS.filter((partner) => partner.category === 'pilates')).toHaveLength(8)
+    expect(PARTNERSHIPS.filter((partner) => partner.category === 'pilates')).toHaveLength(9)
   })
 
   it('does not invent an agreed frequency or an active partnership', () => {
