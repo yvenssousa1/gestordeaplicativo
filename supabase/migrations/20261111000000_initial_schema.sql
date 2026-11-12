@@ -76,7 +76,7 @@ create table if not exists public.campaigns (
   id uuid primary key default gen_random_uuid(),
   business_id uuid not null references public.business_units(id) on delete restrict,
   name text not null,
-  channel text not null check (channel in ('whatsapp','meta','instagram','tiktok','linkedin','website','referral','other')),
+  channel text not null check (channel in ('whatsapp','meta','google_ads','instagram','tiktok','linkedin','website','referral','other')),
   external_campaign_id text,
   status text not null default 'draft' check (status in ('draft','active','paused','completed','archived')),
   budget numeric(14,2),
