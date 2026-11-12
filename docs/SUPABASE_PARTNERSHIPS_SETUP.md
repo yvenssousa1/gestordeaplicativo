@@ -1,6 +1,6 @@
 # Configuração do Supabase — módulo Parcerias
 
-Este guia prepara a ligação do módulo Parcerias ao projecto Supabase. A implementação de código está na branch `feat/supabase-partnerships-crud`; nenhuma migração foi executada automaticamente.
+Este guia prepara a ligação do módulo Parcerias ao projecto Supabase. A implementação integrada está na branch `feat/crm-supabase-bootstrap` e aponta para o projecto oficial `ichcexfuqcmcosxunnth` (Europa — Irlanda). As migrações desta branch ainda não foram aplicadas ao projecto remoto.
 
 ## 1. Aplicar as migrações pela ordem correcta
 
@@ -10,9 +10,9 @@ Depois de rever e aprovar as alterações, aplicar no SQL Editor do projecto Sup
 2. `supabase/migrations/20261112000000_partnerships.sql`
 3. `supabase/migrations/20261112130000_marketing_intelligence.sql`
 
-A primeira migração cria as unidades de negócio, memberships e a função de autorização `has_business_access`. A segunda cria `partners` e `partnership_activities`, respectivas políticas RLS e importa os 36 potenciais parceiros do catálogo de Oeiras e Cascais. A terceira acrescenta serviços e preços, contas de anúncios, criativos, métricas diárias, pontos de contacto, conversões, experiências e recomendações.
+A primeira migração cria as unidades de negócio, memberships, o helper privado `private.has_business_access` e o CRM operacional base. O helper usa privilégios do utilizador e não é exposto no schema da API. A segunda cria `partners` e `partnership_activities`, respectivas políticas RLS e importa os 36 potenciais parceiros do catálogo de Oeiras e Cascais. A terceira acrescenta serviços e preços, contas de anúncios, criativos, métricas diárias, pontos de contacto, conversões, experiências e recomendações.
 
-Não executar a segunda migração antes da primeira. Fazer backup e confirmar que o projecto Supabase é o projecto destinado à aplicação.
+Executar as migrações pela ordem indicada. O projecto remoto foi confirmado como vazio antes desta preparação. As migrações incluem RLS e GRANTs explícitos para a API; as novas tabelas não ficam acessíveis apenas por existirem. Nunca aplicar migrações de outra branch sem comparar os ficheiros.
 
 ## 2. Configurar as variáveis de ambiente
 
