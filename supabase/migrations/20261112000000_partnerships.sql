@@ -60,14 +60,14 @@ alter table public.partnership_activities enable row level security;
 drop policy if exists partners_member_all on public.partners;
 create policy partners_member_all on public.partners
   for all to authenticated
-  using (public.has_business_access(business_id))
-  with check (public.has_business_access(business_id));
+  using (private.has_business_access(business_id))
+  with check (private.has_business_access(business_id));
 
 drop policy if exists partnership_activities_member_all on public.partnership_activities;
 create policy partnership_activities_member_all on public.partnership_activities
   for all to authenticated
-  using (public.has_business_access(business_id))
-  with check (public.has_business_access(business_id));
+  using (private.has_business_access(business_id))
+  with check (private.has_business_access(business_id));
 
 
 -- Seed the 36 named prospects from the user-provided Oeiras/Cascais directory.
