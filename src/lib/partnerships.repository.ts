@@ -60,26 +60,29 @@ export class PartnershipAccessError extends Error {
 }
 
 export async function getTherapyBusinessId(client: SupabaseClient): Promise<string> {
+  // Membership rows are self-readable under the initial migration's RLS policy.
+  // Resolve the allowed business IDs first so the business_units policy can
+  // safely expose only units to which this user already belongs.
+  const { data: memberships, error: membershipError } = await client
+    .from('business_memberships')
+    .select('business_id')
+
+  if (membershipError) throw membershipError
+  const allowedBusinessIds = (memberships ?? []).map((membership: { business_id: string }) => membership.business_id)
+  if (allowedBusinessIds.length === 0) {
+    throw new PartnershipAccessError('A tua conta ainda não tem acesso a nenhuma unidade de negócio. É necessário criar a associação de utilizador no Supabase.')
+  }
+
   const { data: business, error: businessError } = await client
     .from('business_units')
     .select('id')
     .eq('code', '001')
+    .in('id', allowedBusinessIds)
     .maybeSingle()
 
   if (businessError) throw businessError
   if (!business?.id) {
-    throw new PartnershipAccessError('A unidade de negócio 001 ainda não está disponível ou a migração inicial não foi aplicada.')
-  }
-
-  const { data: membership, error: membershipError } = await client
-    .from('business_memberships')
-    .select('id')
-    .eq('business_id', business.id)
-    .maybeSingle()
-
-  if (membershipError) throw membershipError
-  if (!membership) {
-    throw new PartnershipAccessError('A tua conta ainda não tem acesso à unidade de negócio 001. É necessário criar a associação de utilizador no Supabase.')
+    throw new PartnershipAccessError('A tua conta ainda não tem acesso à unidade de negócio 001 (Serviços terapêuticos). É necessário atribuir essa unidade no Supabase.')
   }
 
   return business.id
