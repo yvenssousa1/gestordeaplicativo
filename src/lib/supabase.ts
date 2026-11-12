@@ -4,11 +4,11 @@ let browserClient: SupabaseClient | null = null
 
 export function getSupabaseBrowserClient(): SupabaseClient | null {
   const url = import.meta.env.VITE_SUPABASE_URL
-  const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+  const publishableKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY
 
-  if (!url || !anonKey) return null
+  if (!url || !publishableKey) return null
 
-  browserClient ??= createClient(url, anonKey, {
+  browserClient ??= createClient(url, publishableKey, {
     auth: {
       persistSession: true,
       autoRefreshToken: true,
@@ -20,5 +20,5 @@ export function getSupabaseBrowserClient(): SupabaseClient | null {
 }
 
 export function isSupabaseConfigured(): boolean {
-  return Boolean(import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY)
+  return Boolean(import.meta.env.VITE_SUPABASE_URL && (import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY))
 }

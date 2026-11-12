@@ -30,16 +30,27 @@ create table if not exists public.business_memberships (
   unique (business_id, user_id)
 );
 
-create or replace function public.has_business_access(target_business_id uuid)
-returns boolean language sql stable security definer set search_path = public
-as $$
+-- Keep authorization helpers outside exposed API schemas and run with caller privileges.
+create schema if not exists private;
+revoke all on schema private from public, anon;
+grant usage on schema private to authenticated;
+
+create or replace function private.has_business_access(target_business_id uuid)
+returns boolean
+language sql
+stable
+security invoker
+set search_path = ''
+as $function$
   select exists (
-    select 1 from public.business_memberships m
-    where m.business_id = target_business_id and m.user_id = auth.uid()
+    select 1
+    from public.business_memberships as m
+    where m.business_id = target_business_id
+      and m.user_id = (select auth.uid())
   );
-$$;
-revoke all on function public.has_business_access(uuid) from public;
-grant execute on function public.has_business_access(uuid) to authenticated;
+$function$;
+revoke all on function private.has_business_access(uuid) from public, anon;
+grant execute on function private.has_business_access(uuid) to authenticated;
 
 create table if not exists public.contacts (
   id uuid primary key default gen_random_uuid(),
@@ -65,7 +76,7 @@ create table if not exists public.campaigns (
   id uuid primary key default gen_random_uuid(),
   business_id uuid not null references public.business_units(id) on delete restrict,
   name text not null,
-  channel text not null check (channel in ('whatsapp','meta','instagram','tiktok','linkedin','website','referral','other')),
+  channel text not null check (channel in ('whatsapp','meta','google_ads','instagram','tiktok','linkedin','website','referral','other')),
   external_campaign_id text,
   status text not null default 'draft' check (status in ('draft','active','paused','completed','archived')),
   budget numeric(14,2),
@@ -92,6 +103,7 @@ create table if not exists public.opportunities (
   lost_reason text,
   owner_user_id uuid references auth.users(id) on delete set null,
   created_at timestamptz not null default now(),
+  unique (id, business_id),
   updated_at timestamptz not null default now(),
   foreign key (contact_id, business_id) references public.contacts(id, business_id) on delete cascade,
   foreign key (campaign_id, business_id) references public.campaigns(id, business_id) on delete restrict
@@ -230,7 +242,7 @@ end $$;
 
 drop policy if exists business_units_member_read on public.business_units;
 create policy business_units_member_read on public.business_units
-for select to authenticated using (public.has_business_access(id));
+for select to authenticated using (private.has_business_access(id));
 drop policy if exists memberships_self_read on public.business_memberships;
 create policy memberships_self_read on public.business_memberships
 for select to authenticated using (user_id = auth.uid());
@@ -238,54 +250,69 @@ for select to authenticated using (user_id = auth.uid());
 -- Memberships are provisioned only by trusted administrative tooling.
 drop policy if exists contacts_member_all on public.contacts;
 create policy contacts_member_all on public.contacts for all to authenticated
-using (public.has_business_access(business_id)) with check (public.has_business_access(business_id));
+using (private.has_business_access(business_id)) with check (private.has_business_access(business_id));
 drop policy if exists campaigns_member_all on public.campaigns;
 create policy campaigns_member_all on public.campaigns for all to authenticated
-using (public.has_business_access(business_id)) with check (public.has_business_access(business_id));
+using (private.has_business_access(business_id)) with check (private.has_business_access(business_id));
 drop policy if exists opportunities_member_all on public.opportunities;
 create policy opportunities_member_all on public.opportunities for all to authenticated
-using (public.has_business_access(business_id)) with check (
-  public.has_business_access(opportunities.business_id)
+using (private.has_business_access(business_id)) with check (
+  private.has_business_access(opportunities.business_id)
 );
 drop policy if exists conversations_member_all on public.conversations;
 create policy conversations_member_all on public.conversations for all to authenticated
-using (public.has_business_access(business_id)) with check (
-  public.has_business_access(conversations.business_id)
+using (private.has_business_access(business_id)) with check (
+  private.has_business_access(conversations.business_id)
 );
 drop policy if exists messages_member_all on public.messages;
 create policy messages_member_all on public.messages for all to authenticated
-using (public.has_business_access(business_id)) with check (
-  public.has_business_access(messages.business_id)
+using (private.has_business_access(business_id)) with check (
+  private.has_business_access(messages.business_id)
 );
 drop policy if exists consents_member_all on public.consents;
 create policy consents_member_all on public.consents for all to authenticated
-using (public.has_business_access(business_id)) with check (
-  public.has_business_access(consents.business_id)
+using (private.has_business_access(business_id)) with check (
+  private.has_business_access(consents.business_id)
 );
 drop policy if exists appointments_member_all on public.appointments;
 create policy appointments_member_all on public.appointments for all to authenticated
-using (public.has_business_access(business_id)) with check (
-  public.has_business_access(appointments.business_id)
+using (private.has_business_access(business_id)) with check (
+  private.has_business_access(appointments.business_id)
 );
 drop policy if exists integrations_member_all on public.integration_connections;
 create policy integrations_member_all on public.integration_connections for all to authenticated
-using (public.has_business_access(business_id)) with check (public.has_business_access(business_id));
+using (private.has_business_access(business_id)) with check (private.has_business_access(business_id));
 
 drop policy if exists approvals_member_read on public.approvals;
 create policy approvals_member_read on public.approvals for select to authenticated
-using (business_id is null or public.has_business_access(business_id));
+using (business_id is null or private.has_business_access(business_id));
 drop policy if exists approvals_member_insert on public.approvals;
 create policy approvals_member_insert on public.approvals for insert to authenticated
-with check (requested_by = auth.uid() and (business_id is null or public.has_business_access(business_id)));
+with check (requested_by = auth.uid() and (business_id is null or private.has_business_access(business_id)));
 
 drop policy if exists async_jobs_member_read on public.async_jobs;
 create policy async_jobs_member_read on public.async_jobs for select to authenticated
-using (business_id is not null and public.has_business_access(business_id));
+using (business_id is not null and private.has_business_access(business_id));
 drop policy if exists audit_logs_member_read on public.audit_logs;
 create policy audit_logs_member_read on public.audit_logs for select to authenticated
-using (business_id is not null and public.has_business_access(business_id));
+using (business_id is not null and private.has_business_access(business_id));
 
 revoke all on public.business_memberships from anon, authenticated;
 grant select on public.business_memberships to authenticated;
 revoke insert, update, delete on public.async_jobs, public.audit_logs from anon, authenticated;
 revoke update, delete on public.approvals from anon, authenticated;
+
+
+-- Explicit Data API privileges. RLS policies above remain the row-level boundary.
+grant usage on schema public to authenticated;
+revoke all on public.business_units, public.business_memberships,
+  public.contacts, public.campaigns, public.opportunities, public.conversations,
+  public.messages, public.consents, public.appointments, public.integration_connections,
+  public.approvals, public.async_jobs, public.audit_logs from anon;
+
+grant select on public.business_units, public.business_memberships to authenticated;
+grant select, insert, update, delete on public.contacts, public.campaigns,
+  public.opportunities, public.conversations, public.messages, public.consents,
+  public.appointments, public.integration_connections to authenticated;
+grant select, insert on public.approvals to authenticated;
+grant select on public.async_jobs, public.audit_logs to authenticated;

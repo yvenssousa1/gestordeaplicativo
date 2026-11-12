@@ -1,6 +1,6 @@
 # Configuração do Supabase — módulo Parcerias
 
-Este guia prepara a ligação do módulo Parcerias ao projecto Supabase. A implementação de código está na branch `feat/supabase-partnerships-crud`; nenhuma migração foi executada automaticamente.
+Este guia prepara a ligação do módulo Parcerias ao projecto Supabase. A implementação integrada está na branch `feat/crm-supabase-bootstrap` e aponta para o projecto oficial `ichcexfuqcmcosxunnth` (Europa — Irlanda). As migrações desta branch ainda não foram aplicadas ao projecto remoto.
 
 ## 1. Aplicar as migrações pela ordem correcta
 
@@ -8,21 +8,24 @@ Depois de rever e aprovar as alterações, aplicar no SQL Editor do projecto Sup
 
 1. `supabase/migrations/20261111000000_initial_schema.sql`
 2. `supabase/migrations/20261112000000_partnerships.sql`
+3. `supabase/migrations/20261112130000_marketing_intelligence.sql`
+4. `supabase/migrations/20261112140000_performance_tuning.sql`
+5. `supabase/migrations/20261112150000_platform_admin.sql`
 
-A primeira migração cria as unidades de negócio, memberships e a função de autorização `has_business_access`. A segunda cria `partners` e `partnership_activities`, respectivas políticas RLS e importa os 36 potenciais parceiros do catálogo de Oeiras e Cascais.
+A primeira migração cria as unidades de negócio, memberships, o helper privado `private.has_business_access` e o CRM operacional base. O helper usa privilégios do utilizador e não é exposto no schema da API. A segunda cria `partners` e `partnership_activities`, respectivas políticas RLS e importa os 36 potenciais parceiros do catálogo de Oeiras e Cascais. A terceira acrescenta serviços e preços, contas de anúncios, criativos, métricas diárias, pontos de contacto, conversões, experiências e recomendações. A quarta optimiza índices de chaves estrangeiras e políticas RLS. A quinta cria a lista privada de administradores globais e permite ao administrador principal aceder a todas as unidades de negócio, presentes e futuras.
 
-Não executar a segunda migração antes da primeira. Fazer backup e confirmar que o projecto Supabase é o projecto destinado à aplicação.
+Executar as migrações pela ordem indicada. O projecto remoto foi confirmado como vazio antes desta preparação. As migrações incluem RLS e GRANTs explícitos para a API; as novas tabelas não ficam acessíveis apenas por existirem. Nunca aplicar migrações de outra branch sem comparar os ficheiros.
 
 ## 2. Configurar as variáveis de ambiente
 
 No ambiente de desenvolvimento e no alojamento da aplicação, definir:
 
 ```env
-VITE_SUPABASE_URL=https://vtukmuibskzpyzprvfnu.supabase.co
-VITE_SUPABASE_ANON_KEY=CHAVE_PUBLICA_ANON_OU_PUBLISHABLE
+VITE_SUPABASE_URL=https://ichcexfuqcmcosxunnth.supabase.co
+VITE_SUPABASE_PUBLISHABLE_KEY=sb_publishable_... (ou VITE_SUPABASE_ANON_KEY para compatibilidade)
 ```
 
-A chave pública pode estar no browser porque o acesso às tabelas é controlado por autenticação e RLS. **Nunca** colocar `service_role`, passwords ou secrets em variáveis com prefixo `VITE_` nem no repositório.
+Usa a chave publicável (`sb_publishable_...`) no browser; a chave pública pode estar no cliente porque o acesso às tabelas é controlado por autenticação, GRANTs mínimos e RLS. **Nunca** colocar `service_role`, passwords ou secrets em variáveis com prefixo `VITE_` nem no repositório.
 
 ## 3. Criar/confirmar o utilizador
 
@@ -61,3 +64,7 @@ Executar este comando apenas para o utilizador a quem se pretende conceder acess
 - O histórico está ligado ao parceiro e à mesma unidade de negócio por chave estrangeira composta.
 - O catálogo local continua disponível como demonstração quando não há configuração ou sessão Supabase.
 - A migração e o seed não são aplicados pela aplicação; a execução é uma decisão administrativa explícita.
+
+
+## Administrador principal
+O primeiro administrador global é provisionado após criar/invitar o utilizador no Supabase Auth. A migração `20261112150000_platform_admin.sql` cria `private.platform_admins` e o helper `private.is_platform_admin()`. Depois de o utilizador aceitar o convite, inserir o seu UUID nesta tabela e criar memberships com role `owner` nas unidades existentes. Não guardar palavras-passe nem chaves secretas no repositório. O acesso global futuro é concedido pelo helper privado usado pelas políticas RLS.
