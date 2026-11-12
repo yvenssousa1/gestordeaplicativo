@@ -8,7 +8,7 @@ import {
 } from 'lucide-react'
 import {
   PARTNERSHIPS, PARTNERSHIP_SOURCE, PARTNERSHIP_TARGETS,
-  type PartnerCategory,
+  type PartnerCategory, type PartnershipLead,
 } from '../lib/partnerships'
 import { getSupabaseBrowserClient, isSupabaseConfigured } from '../lib/supabase'
 import {
@@ -198,18 +198,20 @@ function PartnershipsPage() {
     }
   }
 
-  const displayRecords = filtered.map((partner) => session ? ({
-    id: partner.id, name: partner.name, category: dbCategoryLabels[partner.category] ?? 'Outros',
-    proposal: partner.proposal, email: partner.email, phone: partner.phone, whatsapp: partner.whatsapp,
-    website: partner.website, address: partner.address, notes: partner.notes,
-    status: statusLabels[partner.status], frequency: partner.frequency ? frequencyLabels[partner.frequency] : 'Por definir',
-    db: partner,
-  }) : ({
-    id: partner.id, name: partner.name, category: categoryLabels[partner.category],
-    proposal: partner.proposal, email: partner.email, phone: partner.phone, whatsapp: partner.whatsapp,
-    website: partner.website, address: partner.address, notes: partner.notes,
-    status: 'Por contactar', frequency: 'Por definir', db: null,
-  }))
+  const displayRecords = session
+    ? (filtered as PartnerRecord[]).map((partner) => ({
+      id: partner.id, name: partner.name, category: dbCategoryLabels[partner.category],
+      proposal: partner.proposal, email: partner.email, phone: partner.phone, whatsapp: partner.whatsapp,
+      website: partner.website, address: partner.address, notes: partner.notes,
+      status: statusLabels[partner.status], frequency: partner.frequency ? frequencyLabels[partner.frequency] : 'Por definir',
+      db: partner,
+    }))
+    : (filtered as PartnershipLead[]).map((partner) => ({
+      id: partner.id, name: partner.name, category: categoryLabels[partner.category],
+      proposal: partner.proposal, email: partner.email, phone: partner.phone, whatsapp: partner.whatsapp,
+      website: partner.website, address: partner.address, notes: partner.notes,
+      status: 'Por contactar', frequency: 'Por definir', db: null,
+    }))
 
   return (
     <main className="app-shell">
