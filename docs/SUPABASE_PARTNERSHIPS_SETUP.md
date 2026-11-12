@@ -10,8 +10,9 @@ Depois de rever e aprovar as alterações, aplicar no SQL Editor do projecto Sup
 2. `supabase/migrations/20261112000000_partnerships.sql`
 3. `supabase/migrations/20261112130000_marketing_intelligence.sql`
 4. `supabase/migrations/20261112140000_performance_tuning.sql`
+5. `supabase/migrations/20261112150000_platform_admin.sql`
 
-A primeira migração cria as unidades de negócio, memberships, o helper privado `private.has_business_access` e o CRM operacional base. O helper usa privilégios do utilizador e não é exposto no schema da API. A segunda cria `partners` e `partnership_activities`, respectivas políticas RLS e importa os 36 potenciais parceiros do catálogo de Oeiras e Cascais. A terceira acrescenta serviços e preços, contas de anúncios, criativos, métricas diárias, pontos de contacto, conversões, experiências e recomendações. A quarta optimiza índices de chaves estrangeiras e políticas RLS.
+A primeira migração cria as unidades de negócio, memberships, o helper privado `private.has_business_access` e o CRM operacional base. O helper usa privilégios do utilizador e não é exposto no schema da API. A segunda cria `partners` e `partnership_activities`, respectivas políticas RLS e importa os 36 potenciais parceiros do catálogo de Oeiras e Cascais. A terceira acrescenta serviços e preços, contas de anúncios, criativos, métricas diárias, pontos de contacto, conversões, experiências e recomendações. A quarta optimiza índices de chaves estrangeiras e políticas RLS. A quinta cria a lista privada de administradores globais e permite ao administrador principal aceder a todas as unidades de negócio, presentes e futuras.
 
 Executar as migrações pela ordem indicada. O projecto remoto foi confirmado como vazio antes desta preparação. As migrações incluem RLS e GRANTs explícitos para a API; as novas tabelas não ficam acessíveis apenas por existirem. Nunca aplicar migrações de outra branch sem comparar os ficheiros.
 
@@ -63,3 +64,7 @@ Executar este comando apenas para o utilizador a quem se pretende conceder acess
 - O histórico está ligado ao parceiro e à mesma unidade de negócio por chave estrangeira composta.
 - O catálogo local continua disponível como demonstração quando não há configuração ou sessão Supabase.
 - A migração e o seed não são aplicados pela aplicação; a execução é uma decisão administrativa explícita.
+
+
+## Administrador principal
+O primeiro administrador global é provisionado após criar/invitar o utilizador no Supabase Auth. A migração `20261112150000_platform_admin.sql` cria `private.platform_admins` e o helper `private.is_platform_admin()`. Depois de o utilizador aceitar o convite, inserir o seu UUID nesta tabela e criar memberships com role `owner` nas unidades existentes. Não guardar palavras-passe nem chaves secretas no repositório. O acesso global futuro é concedido pelo helper privado usado pelas políticas RLS.
