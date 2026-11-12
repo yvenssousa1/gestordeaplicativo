@@ -6,10 +6,10 @@ Diretório transcrito de "Plano de Negócios e Diretório de Parcerias — Oeira
 ## Importação inicial
 - 13 empresas/parques empresariais: proposta de bem-estar corporativo e sessões no local.
 - 14 clínicas/consultórios: proposta de referenciação mútua e cobertura de pedidos ao domicílio/horários alternativos.
-- 8 estúdios de Pilates: proposta de troca de indicações para massagem terapêutica e recuperação muscular.
+- 9 estúdios de Pilates: proposta de troca de indicações para massagem terapêutica e recuperação muscular.
 - 2 segmentos para palestras (instituições sénior/centros de dia e Santas Casas/associações de reformados), sem entidades concretas ou contactos nomeados no documento.
 
-Total: 35 entidades nomeadas + 2 segmentos de prospeção não individualizados.
+Total: 36 entidades nomeadas + 2 segmentos de prospeção não individualizados.
 
 ## Regras de qualidade
 - Os registos são oportunidades em estado inicial "por contactar"; não são parcerias existentes nem contactos realizados.
