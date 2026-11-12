@@ -208,7 +208,7 @@ create table public.campaign_recommendations (
   generated_at timestamptz not null default now(),
   reviewed_by uuid references auth.users(id) on delete set null,
   reviewed_at timestamptz,
-  foreign key (campaign_id, business_id) references public.campaigns(id, business_id) on delete set null
+  foreign key (campaign_id, business_id) references public.campaigns(id, business_id) on delete set null (campaign_id)
 );
 create index campaign_recommendations_status_date_idx on public.campaign_recommendations (business_id, status, generated_at desc);
 
