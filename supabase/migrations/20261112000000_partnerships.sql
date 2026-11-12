@@ -121,3 +121,8 @@ cross join (values
 ) as p(category, collaboration_types, name, proposal, email, phone, whatsapp, website, address, notes, source_page)
 where bu.code = '001'
 on conflict (business_id, name) do nothing;
+
+
+-- Explicit table privileges for authenticated users; row access remains governed by RLS.
+revoke all on public.partners, public.partnership_activities from anon;
+grant select, insert, update, delete on public.partners, public.partnership_activities to authenticated;
