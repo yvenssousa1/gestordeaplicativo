@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import {
-  Activity, ArrowUpRight, Bell, CalendarDays, ChartNoAxesCombined,
+  Activity, ArrowUpRight, Bell, CalendarDays, ChartNoAxesCombined, Handshake,
   ChevronDown, CircleHelp, ContactRound, LayoutDashboard, MessageCircle,
   Plug, Search, Settings2, ShieldCheck, Sparkles, Users,
 } from 'lucide-react'
@@ -28,7 +28,7 @@ function Dashboard() {
         <nav className="nav-list" aria-label="Navegação principal">
           <a className="nav-item active" href="#overview"><LayoutDashboard size={17} /> Visão geral</a>
           <a className="nav-item" href="#businesses"><Activity size={17} /> Negócios</a>
-          <a className="nav-item" href="#crm"><ContactRound size={17} /> CRM e contactos</a>
+          <a className="nav-item" href="#crm"><ContactRound size={17} /> CRM e contactos</a>\n          <a className="nav-item" href="/parcerias"><Handshake size={17} /> Parcerias</a>
           <a className="nav-item" href="#campaigns"><ChartNoAxesCombined size={17} /> Campanhas</a>
           <a className="nav-item" href="#whatsapp"><MessageCircle size={17} /> WhatsApp</a>
           <a className="nav-item" href="#agenda"><CalendarDays size={17} /> Agenda</a>
@@ -102,7 +102,7 @@ function Dashboard() {
           <div className="module-grid">
             <Module icon={<Users size={19} />} title="CRM e contactos" description="Contactos centrais com perfil e consentimento por negócio." status="A implementar" />
             <Module icon={<MessageCircle size={19} />} title="Conversas WhatsApp" description="Entrada de mensagens, qualificação e passagem para humano." status="A implementar" />
-            <Module icon={<CalendarDays size={19} />} title="Agenda" description="Disponibilidade, marcações e sincronização de calendário." status="A implementar" />
+            <Module icon={<CalendarDays size={19} />} title="Agenda" description="Disponibilidade, marcações e sincronização de calendário." status="A implementar" />\n            <a className="module-card module-link" href="/parcerias"><span className="module-icon"><Handshake size={19} /></span><div className="module-copy"><h3>Parcerias e expansão</h3><p>Diretório de Oeiras e Cascais, propostas e oportunidades de colaboração.</p><span className="module-status">Diretório inicial disponível</span></div><ArrowUpRight size={16} className="module-arrow" /></a>
             <Module icon={<Plug size={19} />} title="Integrações" description="Conectores oficiais com credenciais protegidas." status="A implementar" />
           </div>
 
